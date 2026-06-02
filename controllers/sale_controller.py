@@ -4,7 +4,7 @@ from database import get_db
 from services.sale_service import SaleService
 from pydantic import BaseModel
 from typing import List
-
+from datetime import date
 
 router = APIRouter()
 
@@ -22,6 +22,11 @@ class VentaRequest(BaseModel):
 def listar_ventas(db: Session = Depends(get_db)):
     service = SaleService(db)
     return service.obtener_historial_ventas()
+
+@router.get("/ventas/diarias/{fecha}")
+def obtener_ventas_diarias(fecha: date, db: Session = Depends(get_db)):
+    service = SaleService(db)
+    return service.obtener_resumen_diario(fecha)
 
 @router.post("/ventas")
 def realizar_venta(venta_data: dict, db: Session = Depends(get_db)):
@@ -44,3 +49,4 @@ def calcular_resumen(venta: VentaRequest, db: Session = Depends(get_db)):
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+    

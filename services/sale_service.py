@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 from domain.models import Sale, DetalleVenta, Videojuego
 from repositories.sale_repository import SaleRepository
-from datetime import datetime
+from datetime import datetime, date
 
 class SaleService:
     def __init__(self, db: Session):
@@ -94,3 +94,29 @@ class SaleService:
                 "items": resumen,
                 "total_a_pagar": total_general
             }
+            
+    def obtener_resumen_diario(self, fecha_busqueda: date):
+        # 1. Obtenemos las ventas (esto debería funcionar si el repo está bien)
+        ventas = self.sale_repo.obtener_ventas_por_fecha(fecha_busqueda)        
+        # 2. Convertimos a una lista simple de diccionarios manualmente
+        ventas_data = []
+        total_recaudado = 0.0
+        
+        for v in ventas:
+            # Aseguramos que el total sea float y no Decimal o None
+            total = float(v.total) if v.total else 0.0
+            total_recaudado += total
+            
+            ventas_data.append({
+                "id_venta": v.id_venta,
+                "total": total,
+                "fecha": str(v.fecha) # Convertimos el objeto fecha a string
+            })
+        
+        # 3. Retornamos el diccionario plano
+        return {
+            "fecha": str(fecha_busqueda),
+            "cantidad_ventas": len(ventas),
+            "total_recaudado": total_recaudado,
+            "ventas": ventas_data
+        }
