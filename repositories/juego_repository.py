@@ -5,8 +5,12 @@ class JuegoRepository:
     def __init__(self, db: Session):
         self.db = db
 
-    def obtener_todos(self):
-        return self.db.query(Videojuego).all()
+    # Añadimos 'busqueda: str = None' como parámetro opcional
+    def obtener_todos(self, busqueda: str = None):
+        query = self.db.query(Videojuego)
+        if busqueda:
+            query = query.filter(Videojuego.nombre.ilike(f"%{busqueda}%"))
+        return query.all()
 
     def crear(self, nombre: str, id_plataforma: int, id_genero: int, precio: float, stock_local: int, stock_global: int, es_historico: bool, imagen: str):
         nuevo_juego = Videojuego(

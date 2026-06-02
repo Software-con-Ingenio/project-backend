@@ -5,8 +5,8 @@ class JuegoService:
     def __init__(self, db: Session):
         self.repo = JuegoRepository(db)
 
-    def listar_juegos(self):
-        return self.repo.obtener_todos()
+    def listar_juegos(self, busqueda: str = None):
+        return self.repo.obtener_todos(busqueda)
 
     def registrar_juego(self, data: dict):
         return self.repo.crear(
