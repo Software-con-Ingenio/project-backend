@@ -12,6 +12,16 @@ class JuegoRepository:
             query = query.filter(Videojuego.nombre.ilike(f"%{busqueda}%"))
         return query.all()
 
+
+    def obtener_por_id(self, id_juego: int):
+        return self.db.query(Videojuego).filter(Videojuego.id_juego == id_juego).first()
+
+    # NUEVO: Método para persistir los cambios
+    def guardar_cambios(self):
+        self.db.commit()
+
+
+
     def crear(self, nombre: str, id_plataforma: int, id_genero: int, precio: float, stock_local: int, stock_global: int, es_historico: bool, imagen: str):
         nuevo_juego = Videojuego(
             nombre=nombre,

@@ -1,4 +1,5 @@
-from fastapi import APIRouter, Depends, Query
+
+from fastapi import APIRouter, Depends, Query, HTTPException
 from typing import Optional
 from sqlalchemy.orm import Session
 from database import get_db
@@ -21,3 +22,15 @@ def listar_juegos(
 def crear_juego(data: dict, db: Session = Depends(get_db)):
     service = JuegoService(db)
     return service.registrar_juego(data)
+
+
+@router.put("/juegos/{id_juego}/stock")
+def actualizar_stock(id_juego: int, nueva_cantidad: int, db: Session = Depends(get_db)):
+    try:
+        service = JuegoService(db)
+        juego = service.actualizar_stock_local(id_juego, nueva_cantidad)
+        return {"message": "Stock actualizado con éxito", "id_juego": juego.id_juego, "nuevo_stock": juego.stock_local}
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Error interno al actualizar el stock")

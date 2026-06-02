@@ -19,3 +19,16 @@ class JuegoService:
             es_historico=data['es_historico'],
             imagen=data['imagen']
         )
+        
+    def actualizar_stock_local(self, id_juego: int, nueva_cantidad: int):
+        # Validación de negocio: El stock no puede ser negativo
+        if nueva_cantidad < 0:
+            raise ValueError("El stock no puede ser un número negativo.")
+            
+        juego = self.repo.obtener_por_id(id_juego)
+        if not juego:
+            raise ValueError(f"El juego con ID {id_juego} no existe.")
+        
+        juego.stock_local = nueva_cantidad
+        self.repo.guardar_cambios()
+        return juego
