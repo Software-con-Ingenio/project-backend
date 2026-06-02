@@ -5,6 +5,7 @@ from services.sale_service import SaleService
 from pydantic import BaseModel
 from typing import List
 from datetime import date
+from fastapi.responses import FileResponse
 
 router = APIRouter()
 
@@ -16,6 +17,30 @@ class VentaRequest(BaseModel):
     id_usuario: int
     detalles: List[DetalleItem]
 
+
+@router.get("/ventas/reporte/pdf/diario/{fecha}")
+def descargar_reporte_diario(fecha: date, db: Session = Depends(get_db)):
+    service = SaleService(db)
+    resumen = service.obtener_resumen_diario(fecha)
+    archivo = f"reporte_diario_{fecha}.pdf"
+    service.generar_pdf_reporte(f"Reporte Diario: {fecha}", resumen['ventas'], resumen['total_recaudado'], archivo)
+    return FileResponse(archivo, media_type='application/pdf', filename=archivo)
+
+@router.get("/ventas/reporte/pdf/mensual/{anio}/{mes}")
+def descargar_reporte_mensual(anio: int, mes: int, db: Session = Depends(get_db)):
+    service = SaleService(db)
+    resumen = service.obtener_resumen_mensual(anio, mes)
+    archivo = f"reporte_mensual_{anio}_{mes}.pdf"
+    service.generar_pdf_reporte(f"Reporte Mensual: {mes}/{anio}", resumen['ventas'], resumen['total_recaudado'], archivo)
+    return FileResponse(archivo, media_type='application/pdf', filename=archivo)
+
+@router.get("/ventas/reporte/pdf/total")
+def descargar_reporte_total(db: Session = Depends(get_db)):
+    service = SaleService(db)
+    resumen = service.obtener_resumen_total()
+    archivo = "reporte_historico_total.pdf"
+    service.generar_pdf_reporte("Reporte Histórico Total", resumen['ventas'], resumen['total_recaudado'], archivo)
+    return FileResponse(archivo, media_type='application/pdf', filename=archivo)
 
 
 @router.get("/ventas")

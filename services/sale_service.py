@@ -2,6 +2,8 @@ from sqlalchemy.orm import Session
 from domain.models import Sale, DetalleVenta, Videojuego
 from repositories.sale_repository import SaleRepository
 from datetime import datetime, date
+from reportlab.lib.pagesizes import letter
+from reportlab.pdfgen import canvas
 
 class SaleService:
     def __init__(self, db: Session):
@@ -120,3 +122,31 @@ class SaleService:
             "total_recaudado": total_recaudado,
             "ventas": ventas_data
         }
+    # --- Lógica de Reportes PDF ---
+    def generar_pdf_reporte(self, titulo, ventas, total, nombre_archivo):
+        c = canvas.Canvas(nombre_archivo, pagesize=letter)
+        c.setFont("Helvetica-Bold", 16)
+        c.drawString(50, 750, titulo)
+        c.setFont("Helvetica", 12)
+        y = 700
+        for v in ventas:
+            c.drawString(50, y, f"ID: {v['id_venta']} | Fecha: {v['fecha']} | Total: ${v['total']:.2f}")
+            y -= 20
+        c.setFont("Helvetica-Bold", 12)
+        c.drawString(50, y - 20, f"TOTAL: ${total:.2f}")
+        c.save()
+
+    def obtener_resumen_diario(self, fecha_busqueda: date):
+        ventas = self.sale_repo.obtener_ventas_por_fecha(fecha_busqueda)
+        ventas_data = [{"id_venta": v.id_venta, "total": float(v.total or 0), "fecha": str(v.fecha)} for v in ventas]
+        return {"fecha": str(fecha_busqueda), "total_recaudado": sum(v['total'] for v in ventas_data), "ventas": ventas_data}
+
+    def obtener_resumen_mensual(self, anio: int, mes: int):
+        ventas = self.sale_repo.obtener_ventas_por_mes(anio, mes)
+        ventas_data = [{"id_venta": v.id_venta, "total": float(v.total or 0), "fecha": str(v.fecha)} for v in ventas]
+        return {"periodo": f"{anio}-{mes}", "total_recaudado": sum(v['total'] for v in ventas_data), "ventas": ventas_data}
+
+    def obtener_resumen_total(self):
+        ventas = self.sale_repo.obtener_todas()
+        ventas_data = [{"id_venta": v.id_venta, "total": float(v.total or 0), "fecha": str(v.fecha)} for v in ventas]
+        return {"periodo": "Histórico Total", "total_recaudado": sum(v['total'] for v in ventas_data), "ventas": ventas_data}

@@ -14,3 +14,5 @@ pytest>=8.0.0,<9.0.0
 
 # Manejo de formularios y datos
 python-multipart>=0.0.9
+
+reportlab>=3.6.0,<4.0.0

@@ -2,7 +2,7 @@ from sqlalchemy.orm import Session
 from domain.models import Sale, DetalleVenta
 from sqlalchemy.orm import joinedload
 from datetime import date
-from sqlalchemy import func
+from sqlalchemy import func, extract
 
 class SaleRepository:
     def __init__(self, db: Session):
@@ -30,3 +30,10 @@ class SaleRepository:
         return self.db.query(Sale).filter(
         func.date(Sale.fecha) == fecha_busqueda
     ).all()
+        
+    def obtener_ventas_por_mes(self, anio: int, mes: int):
+        # Filtra ventas extrayendo año y mes de la columna fecha
+        return self.db.query(Sale).filter(
+            extract('year', Sale.fecha) == anio,
+            extract('month', Sale.fecha) == mes
+        ).all()
