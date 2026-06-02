@@ -1,5 +1,6 @@
 from sqlalchemy.orm import Session
 from domain.models import Sale, DetalleVenta
+from sqlalchemy.orm import joinedload
 
 class SaleRepository:
     def __init__(self, db: Session):
@@ -15,3 +16,9 @@ class SaleRepository:
         self.db.add(detalle)
         self.db.commit()
         return detalle
+    def __init__(self, db):
+        self.db = db
+
+    def obtener_todas(self):
+        # joinedload permite traer la venta junto con sus detalles en un solo viaje a la BD
+        return self.db.query(Sale).options(joinedload(Sale.detalles)).all()

@@ -1,12 +1,18 @@
 from sqlalchemy.orm import Session
 from domain.models import Sale, DetalleVenta, Videojuego
 from repositories.sale_repository import SaleRepository
+from datetime import datetime
 
 class SaleService:
     def __init__(self, db: Session):
         self.db = db
         self.sale_repo = SaleRepository(db)
-
+        
+    def obtener_historial_ventas(self):
+        # Retorna todas las ventas con sus detalles cargados
+        ventas = self.sale_repo.obtener_todas()
+        return ventas
+    
     def registrar_venta(self, data: dict):
         detalles = data.get('detalles', [])
         if not detalles:
@@ -15,6 +21,7 @@ class SaleService:
         total_calculado = 0
         lista_detalles = []
 
+        # 1. Validación de disponibilidad y cálculo de precio
         for item in detalles:
             juego = self.db.query(Videojuego).filter(Videojuego.id_juego == item['id_juego']).first()
             
@@ -38,9 +45,15 @@ class SaleService:
                 "precio": precio_unitario
             })
 
-        nueva_venta = Sale(total=total_calculado, id_usuario=data['id_usuario'])
+        # 2. Creación de la venta con la fecha actual
+        nueva_venta = Sale(
+            total=total_calculado, 
+            id_usuario=data['id_usuario'],
+            fecha=datetime.now() # <--- Fecha registrada al momento de la venta
+        )
         self.sale_repo.crear_venta(nueva_venta)
 
+        # 3. Creación de detalles y actualización de stock
         for d in lista_detalles:
             detalle = DetalleVenta(
                 id_venta=nueva_venta.id_venta,
@@ -49,6 +62,8 @@ class SaleService:
                 precio_unitario=d['precio']
             )
             self.sale_repo.crear_detalle(detalle)
+            
+            # Descuento de stock
             d['juego'].stock_local -= d['cantidad']
         
         self.db.commit()

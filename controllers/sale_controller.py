@@ -5,6 +5,11 @@ from services.sale_service import SaleService
 
 router = APIRouter()
 
+@router.get("/ventas")
+def listar_ventas(db: Session = Depends(get_db)):
+    service = SaleService(db)
+    return service.obtener_historial_ventas()
+
 @router.post("/ventas")
 def realizar_venta(venta_data: dict, db: Session = Depends(get_db)):
     try:

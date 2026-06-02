@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Boolean, Numeric, DateTime, ForeignKey
+from sqlalchemy import Column, Integer, String, Boolean, Numeric, DateTime, ForeignKey, func
 from sqlalchemy.orm import relationship
 from database import Base
 
@@ -49,7 +49,7 @@ class Videojuego(Base):
 class Sale(Base):
     __tablename__ = "sale"
     id_venta = Column(Integer, primary_key=True, index=True)
-    fecha = Column(DateTime)
+    fecha = Column(DateTime, server_default=func.now())
     total = Column(Numeric)
     id_usuario = Column(Integer, ForeignKey("usuario.id_usuario"))
     
