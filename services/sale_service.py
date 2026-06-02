@@ -68,3 +68,29 @@ class SaleService:
         
         self.db.commit()
         return nueva_venta
+    
+    def calcular_resumen_venta(self, detalles_solicitados: list):
+            resumen = []
+            total_general = 0
+
+            for item in detalles_solicitados:
+                # CAMBIO: Aquí accedemos con punto '.' en lugar de corchetes '[]'
+                juego = self.db.query(Videojuego).filter(Videojuego.id_juego == item.id_juego).first()
+                if not juego:
+                    raise ValueError(f"Juego {item.id_juego} no encontrado")
+                
+                precio = float(juego.precio)
+                subtotal = precio * item.cantidad 
+                total_general += subtotal
+                
+                resumen.append({
+                    "nombre": juego.nombre,
+                    "cantidad": item.cantidad, 
+                    "precio_unitario": precio,
+                    "subtotal": subtotal
+                })
+                
+            return {
+                "items": resumen,
+                "total_a_pagar": total_general
+            }
