@@ -23,3 +23,13 @@ class UsuarioRepository:
     
     def obtener_todos(self):
         return self.db.query(Usuario).all()
+    
+    def obtener_por_id(self, id_usuario: int):
+        return self.db.query(Usuario).filter(Usuario.id_usuario == id_usuario).first()
+
+    def guardar_cambios(self):
+        self.db.commit()
+        
+    def eliminar_fisicamente(self, usuario):
+        self.db.delete(usuario)
+        self.db.commit()
