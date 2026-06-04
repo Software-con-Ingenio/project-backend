@@ -67,7 +67,6 @@ class UsuarioService:
         if borrado_fisico:
             self.repo.eliminar_fisicamente(usuario)
         else:
-            # Baja lógica: el usuario sigue existiendo pero ya no es "activo"
             usuario.activo = False
             self.repo.guardar_cambios()
         

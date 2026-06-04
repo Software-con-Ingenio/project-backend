@@ -1,3 +1,5 @@
+import email
+
 from sqlalchemy.orm import Session
 from domain.models import Usuario
 
@@ -33,3 +35,7 @@ class UsuarioRepository:
     def eliminar_fisicamente(self, usuario):
         self.db.delete(usuario)
         self.db.commit()
+        
+    def obtener_por_email(self, email: str):
+    # Esto busca en la tabla Usuario donde el email coincida
+        return self.db.query(Usuario).filter(Usuario.email == email).first()

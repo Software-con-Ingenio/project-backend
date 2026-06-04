@@ -5,6 +5,7 @@ from controllers.juego_controller import router as juego_router
 from controllers.platform_controller import router as platform_router
 from controllers.sale_controller import router as sale_router
 from controllers.usuario_controller import router as usuario_router
+from controllers.auth_controller import router as auth_router
 app = FastAPI()
 
 
@@ -19,3 +20,4 @@ app.include_router(juego_router)
 app.include_router(platform_router)
 app.include_router(sale_router)
 app.include_router(usuario_router)
+app.include_router(auth_router)
