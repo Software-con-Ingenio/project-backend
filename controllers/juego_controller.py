@@ -4,6 +4,7 @@ from typing import Optional
 from sqlalchemy.orm import Session
 from database import get_db
 from services.juego_service import JuegoService
+from controllers.auth_controller import obtener_usuario_actual
 
 router = APIRouter()
 
@@ -18,8 +19,11 @@ def listar_juegos(
     service = JuegoService(db)
     # Pasamos el parámetro al servicio
     return service.listar_juegos(busqueda)
+
 @router.post("/juegos")
-def crear_juego(data: dict, db: Session = Depends(get_db)):
+def crear_juego(data: dict, db: Session = Depends(get_db), current_user: dict = Depends(obtener_usuario_actual)):
+    if current_user.get("rol") != "Administrador":
+        raise HTTPException(status_code=403, detail="No autorizado")
     service = JuegoService(db)
     return service.registrar_juego(data)
 

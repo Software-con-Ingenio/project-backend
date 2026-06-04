@@ -6,6 +6,7 @@ from pydantic import BaseModel
 from typing import List
 from datetime import date
 from fastapi.responses import FileResponse
+from controllers.auth_controller import obtener_usuario_actual
 
 router = APIRouter()
 
@@ -19,7 +20,9 @@ class VentaRequest(BaseModel):
 
 
 @router.get("/ventas/reporte/pdf/diario/{fecha}")
-def descargar_reporte_diario(fecha: date, db: Session = Depends(get_db)):
+def descargar_reporte_diario(fecha: date, db: Session = Depends(get_db), current_user: dict = Depends(obtener_usuario_actual)):
+    if current_user.get("rol") != "Administrador":
+        raise HTTPException(status_code=403, detail="No autorizado")
     service = SaleService(db)
     resumen = service.obtener_resumen_diario(fecha)
     archivo = f"reporte_diario_{fecha}.pdf"
@@ -27,7 +30,9 @@ def descargar_reporte_diario(fecha: date, db: Session = Depends(get_db)):
     return FileResponse(archivo, media_type='application/pdf', filename=archivo)
 
 @router.get("/ventas/reporte/pdf/mensual/{anio}/{mes}")
-def descargar_reporte_mensual(anio: int, mes: int, db: Session = Depends(get_db)):
+def descargar_reporte_mensual(anio: int, mes: int, db: Session = Depends(get_db), current_user: dict = Depends(obtener_usuario_actual)):
+    if current_user.get("rol") != "Administrador":
+        raise HTTPException(status_code=403, detail="No autorizado")
     service = SaleService(db)
     resumen = service.obtener_resumen_mensual(anio, mes)
     archivo = f"reporte_mensual_{anio}_{mes}.pdf"
@@ -35,7 +40,9 @@ def descargar_reporte_mensual(anio: int, mes: int, db: Session = Depends(get_db)
     return FileResponse(archivo, media_type='application/pdf', filename=archivo)
 
 @router.get("/ventas/reporte/pdf/total")
-def descargar_reporte_total(db: Session = Depends(get_db)):
+def descargar_reporte_total(db: Session = Depends(get_db), current_user: dict = Depends(obtener_usuario_actual)):
+    if current_user.get("rol") != "Administrador":
+        raise HTTPException(status_code=403, detail="No autorizado")
     service = SaleService(db)
     resumen = service.obtener_resumen_total()
     archivo = "reporte_historico_total.pdf"
