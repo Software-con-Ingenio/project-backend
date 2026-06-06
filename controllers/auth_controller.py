@@ -3,6 +3,7 @@ from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy.orm import Session
 from database import get_db
 from services.auth_service import AuthService
+from domain.models import Usuario
 
 router = APIRouter()
 # Esta variable habilita el candado en Swagger
@@ -24,8 +25,18 @@ def obtener_usuario_actual(
 def login(data: dict, db: Session = Depends(get_db)):
     try:
         service = AuthService(db)
-        # Asegúrate de que los nombres de los campos en 'data' coincidan con tu JSON
+        # 1. Obtenemos el token
         token = service.autenticar_usuario(data['email'], data['contrasena'])
-        return {"access_token": token, "token_type": "bearer"}
+        
+        # 2. OBTENEMOS EL USUARIO (para sacar su rol)
+        # Necesitas una forma de buscar al usuario en la BD por su email
+        user = db.query(Usuario).filter(Usuario.email == data['email']).first()
+        
+        # 3. Retornamos el token Y el id_rol
+        return {
+            "access_token": token, 
+            "token_type": "bearer",
+            "id_rol": user.id_rol # <--- AQUÍ ESTÁ LA MAGIA
+        }
     except ValueError:
         raise HTTPException(status_code=401, detail="Credenciales incorrectas")
