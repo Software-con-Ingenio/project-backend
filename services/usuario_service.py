@@ -37,7 +37,7 @@ class UsuarioService:
         
     def actualizar_usuario(self, id_usuario: int, data: dict):
         # 1. Definir los campos permitidos
-        campos_permitidos = {'nombre', 'id_rol', 'activo', 'contrasena'}
+        campos_permitidos = {'nombre', 'email', 'id_rol', 'activo', 'contrasena'}
         
         # 2. Verificar si hay llaves extra que no deberían estar ahí
         for llave in data.keys():
@@ -48,6 +48,14 @@ class UsuarioService:
         usuario = self.repo.obtener_por_id(id_usuario)
         if not usuario:
             raise ValueError(f"Usuario con ID {id_usuario} no encontrado.")
+
+        # Si cambia email, validar que no exista en otro usuario
+        if 'email' in data:
+            email_nuevo = data['email'].strip().lower()
+            existente = self.repo.obtener_por_email(email_nuevo)
+            if existente and existente.id_usuario != usuario.id_usuario:
+                raise ValueError("El correo electrónico ya está registrado.")
+            usuario.email = email_nuevo
         
         # 4. Actualizar solo lo que viene en el dict
         if 'nombre' in data: usuario.nombre = data['nombre']

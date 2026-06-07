@@ -1,3 +1,4 @@
+
 from fastapi import FastAPI
 from database import Base, engine
 from controllers.genre_controller import router as genre_router
