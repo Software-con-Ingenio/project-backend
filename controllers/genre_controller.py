@@ -17,3 +17,16 @@ def crear_genero(nombre: str, db: Session = Depends(get_db), current_user: dict 
         raise HTTPException(status_code=403, detail="No autorizado")
     repo = GenreRepository(db)
     return repo.crear(nombre)
+
+
+@router.delete("/genres/{id}")
+def eliminar_genero(id: int, db: Session = Depends(get_db), current_user: dict = Depends(obtener_usuario_actual)):
+    if current_user.get("rol") != "Administrador":
+        raise HTTPException(status_code=403, detail="No autorizado")
+
+    service = GenreService(db)
+    # Asegúrate de pasar el 'id' a tu servicio
+    if service.eliminar_genero(id):
+        return {"message": "Género eliminado correctamente"}
+    
+    raise HTTPException(status_code=404, detail="Género no encontrado")

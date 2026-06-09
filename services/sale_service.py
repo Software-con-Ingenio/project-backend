@@ -13,7 +13,23 @@ class SaleService:
     def obtener_historial_ventas(self):
         # Retorna todas las ventas con sus detalles cargados
         ventas = self.sale_repo.obtener_todas()
-        return ventas
+        resultado = []
+    
+        for v in ventas:
+            resultado.append({
+                "id_venta": v.id_venta,
+                "total": float(v.total or 0),
+                "fecha": str(v.fecha) if v.fecha else "Sin fecha",
+                "usuario": v.id_usuario if v.id_usuario else "N/A",
+                "detalles": [
+                    {
+                        "nombre_juego": d.juego.nombre, # <--- ¡Gracias a la relación, esto ya funciona!
+                        "cantidad": d.cantidad,
+                        "precio": float(d.precio_unitario)
+                    } for d in v.detalles
+                ]
+            })
+        return resultado
     
     def registrar_venta(self, data: dict):
         detalles = data.get('detalles', [])

@@ -65,3 +65,4 @@ class DetalleVenta(Base):
     precio_unitario = Column(Numeric)
     
     venta = relationship("Sale", back_populates="detalles")
+    juego = relationship("Videojuego") # Agrega esto

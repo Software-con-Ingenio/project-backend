@@ -15,8 +15,10 @@ class JuegoService:
                 "nombre": j.nombre,
                 "stock_local": j.stock_local,
                 "precio": j.precio,
+                "stock_global": j.stock_global, 
                 # Lógica de la alerta: True si es menor a 3
-                "alerta_stock": j.stock_local < 3
+                "alerta_stock": j.stock_local < 3,
+                "es_historico": j.es_historico 
             }
             resultado.append(juego_dict)
         return resultado
@@ -33,15 +35,29 @@ class JuegoService:
             imagen=data['imagen']
         )
         
-    def actualizar_stock_local(self, id_juego: int, nueva_cantidad: int):
-        # Validación de negocio: El stock no puede ser negativo
-        if nueva_cantidad < 0:
-            raise ValueError("El stock no puede ser un número negativo.")
-            
+    # En services/juego_service.py
+
+# ... tus otros métodos ...
+
+    def actualizar_juego(self, id_juego: int, data: dict):
+        """
+        Actualiza precio y/o stock de forma dinámica según lo que venga en 'data'.
+        """
         juego = self.repo.obtener_por_id(id_juego)
         if not juego:
             raise ValueError(f"El juego con ID {id_juego} no existe.")
-        
-        juego.stock_local = nueva_cantidad
+
+        # Actualizar stock si viene en el diccionario
+        if 'stock_local' in data:
+            if data['stock_local'] < 0:
+                raise ValueError("El stock no puede ser un número negativo.")
+            juego.stock_local = data['stock_local']
+
+        # Actualizar precio si viene en el diccionario
+        if 'precio' in data:
+            if float(data['precio']) < 0:
+                raise ValueError("El precio no puede ser negativo.")
+            juego.precio = data['precio']
+
         self.repo.guardar_cambios()
         return juego

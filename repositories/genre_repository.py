@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from domain.models import Genre
+from domain.models import Genre, Videojuego
 
 class GenreRepository:
     def __init__(self, db: Session):
@@ -14,3 +14,16 @@ class GenreRepository:
         self.db.commit()
         self.db.refresh(nuevo)
         return nuevo
+    
+    def eliminar(self, id_genero: int):
+        genero = self.db.query(Genre).filter(Genre.id_genero == id_genero).first()
+        if genero:
+            # Desasociamos videojuegos para evitar que la eliminación falle por clave foránea.
+            self.db.query(Videojuego).filter(Videojuego.id_genero == id_genero).update(
+                {Videojuego.id_genero: None},
+                synchronize_session=False,
+            )
+            self.db.delete(genero)
+            self.db.commit()
+            return True
+        return False

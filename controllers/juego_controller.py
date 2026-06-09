@@ -28,13 +28,11 @@ def crear_juego(data: dict, db: Session = Depends(get_db), current_user: dict = 
     return service.registrar_juego(data)
 
 
-@router.put("/juegos/{id_juego}/stock")
-def actualizar_stock(id_juego: int, nueva_cantidad: int, db: Session = Depends(get_db)):
+@router.put("/juegos/{id_juego}")
+def actualizar_juego(id_juego: int, data: dict, db: Session = Depends(get_db)):
     try:
         service = JuegoService(db)
-        juego = service.actualizar_stock_local(id_juego, nueva_cantidad)
-        return {"message": "Stock actualizado con éxito", "id_juego": juego.id_juego, "nuevo_stock": juego.stock_local}
+        juego = service.actualizar_juego(id_juego, data)
+        return {"message": "Juego actualizado correctamente", "juego": {"id": juego.id_juego, "precio": juego.precio, "stock": juego.stock_local}}
     except ValueError as e:
-        raise HTTPException(status_code=404, detail=str(e))
-    except Exception as e:
-        raise HTTPException(status_code=500, detail="Error interno al actualizar el stock")
+        raise HTTPException(status_code=400, detail=str(e))

@@ -7,3 +7,6 @@ class GenreService:
 
     def listar_generos(self):
         return self.repo.obtener_todos()
+
+    def eliminar_genero(self, id_genero: int):
+        return self.repo.eliminar(id_genero)

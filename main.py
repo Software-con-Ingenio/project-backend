@@ -9,6 +9,7 @@ from controllers.usuario_controller import router as usuario_router
 from controllers.auth_controller import router as auth_router
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
+from services.juego_service import JuegoService
 app = FastAPI()
 
 

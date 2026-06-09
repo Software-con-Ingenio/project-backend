@@ -51,7 +51,10 @@ def descargar_reporte_total(db: Session = Depends(get_db), current_user: dict = 
 
 
 @router.get("/ventas")
-def listar_ventas(db: Session = Depends(get_db)):
+def listar_ventas(db: Session = Depends(get_db), current_user: dict = Depends(obtener_usuario_actual)):
+    # Sólo administradores pueden consultar el historial completo
+    if current_user.get("rol") != "Administrador" and current_user.get("id_rol") != 1 and str(current_user.get("id_rol")) != "1":
+        raise HTTPException(status_code=403, detail="No autorizado")
     service = SaleService(db)
     return service.obtener_historial_ventas()
 
