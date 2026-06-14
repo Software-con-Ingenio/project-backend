@@ -11,6 +11,7 @@ services:
       # Asegúrate que esta ruta exista en tu PC. 
       # Si tu código está en la raíz, cámbialo por: - .:/app
       - .:/app 
+      - ../project-frontend:/app/project-frontend
     environment:
       PYTHONUNBUFFERED: 1
     depends_on:
