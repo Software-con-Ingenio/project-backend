@@ -3,7 +3,6 @@ from datetime import datetime, timedelta
 from passlib.context import CryptContext
 from repositories.usuario_repository import UsuarioRepository
 
-# Configuración de seguridad
 SECRET_KEY = "tu_clave_secreta_super_segura"
 ALGORITHM = "HS256"
 pwd_context = CryptContext(schemes=["argon2"], deprecated="auto")
@@ -28,5 +27,5 @@ class AuthService:
     def verificar_token(self, token):
         try:
             return jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        except:
+        except:  # noqa: E722
             return None

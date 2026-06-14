@@ -58,9 +58,12 @@ class UsuarioService:
             usuario.email = email_nuevo
         
         # 4. Actualizar solo lo que viene en el dict
-        if 'nombre' in data: usuario.nombre = data['nombre']
-        if 'id_rol' in data: usuario.id_rol = data['id_rol']
-        if 'activo' in data: usuario.activo = data['activo']
+        if 'nombre' in data:
+            usuario.nombre = data['nombre']    
+        if 'id_rol' in data: 
+            usuario.id_rol = data['id_rol']
+        if 'activo' in data: 
+            usuario.activo = data['activo']
         if 'contrasena' in data:
             usuario.contrasena = pwd_context.hash(data['contrasena'])
             

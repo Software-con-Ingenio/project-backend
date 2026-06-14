@@ -40,3 +40,23 @@ def login(data: dict, db: Session = Depends(get_db)):
         }
     except ValueError:
         raise HTTPException(status_code=401, detail="Credenciales incorrectas")
+    
+@router.get("/perfil")
+def obtener_perfil(current_user: dict = Depends(obtener_usuario_actual), db: Session = Depends(get_db)):
+    # Imprime esto para ver exactamente qué claves tiene tu diccionario
+    print(f"DEBUG: Contenido de current_user: {current_user}")
+    
+    # Intenta usar 'id_usuario' si es como se llama en tu modelo
+    usuario_id = current_user.get("id_usuario") or current_user.get("id") or current_user.get("sub")
+    
+    usuario = db.query(Usuario).filter(Usuario.id_usuario == usuario_id).first()
+    
+    if not usuario:
+        raise HTTPException(status_code=404, detail="Usuario no encontrado")
+        
+    return {
+        "nombre": usuario.nombre,
+        "email": usuario.email,
+        "rol": usuario.rol.nombre_rol if usuario.rol else "Sin rol",
+        "total_ventas": len(usuario.ventas)
+    }

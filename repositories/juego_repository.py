@@ -5,7 +5,6 @@ class JuegoRepository:
     def __init__(self, db: Session):
         self.db = db
 
-    # Añadimos 'busqueda: str = None' como parámetro opcional
     def obtener_todos(self, busqueda: str = None):
         query = self.db.query(Videojuego)
         if busqueda:
@@ -16,7 +15,6 @@ class JuegoRepository:
     def obtener_por_id(self, id_juego: int):
         return self.db.query(Videojuego).filter(Videojuego.id_juego == id_juego).first()
 
-    # NUEVO: Método para persistir los cambios
     def guardar_cambios(self):
         self.db.commit()
 

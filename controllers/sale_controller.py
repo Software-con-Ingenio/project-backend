@@ -71,7 +71,7 @@ def realizar_venta(venta_data: dict, db: Session = Depends(get_db)):
         return {"message": "Venta realizada con éxito", "id_venta": venta.id_venta}
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
-    except Exception as e:
+    except Exception:
         raise HTTPException(status_code=500, detail="Error interno al procesar la venta")
 
 @router.post("/ventas/calcular")

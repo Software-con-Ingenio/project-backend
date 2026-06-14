@@ -20,14 +20,12 @@ def crear_plataforma(nombre: str, db: Session = Depends(get_db), current_user: d
     repo = PlatformRepository(db)
     return repo.crear(nombre)
 
-# Cambia el nombre de la variable de 'id_plataforma' a 'id'
 @router.delete("/platforms/{id}")
 def eliminar_plataforma(id: int, db: Session = Depends(get_db), current_user: dict = Depends(obtener_usuario_actual)):
     if current_user.get("rol") != "Administrador":
         raise HTTPException(status_code=403, detail="No autorizado")
     
     service = PlatformService(db)
-    # Asegúrate de pasar el 'id' a tu servicio
     if service.eliminar_plataforma(id):
         return {"message": "Plataforma eliminada correctamente"}
     

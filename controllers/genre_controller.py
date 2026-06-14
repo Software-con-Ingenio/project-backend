@@ -25,7 +25,6 @@ def eliminar_genero(id: int, db: Session = Depends(get_db), current_user: dict =
         raise HTTPException(status_code=403, detail="No autorizado")
 
     service = GenreService(db)
-    # Asegúrate de pasar el 'id' a tu servicio
     if service.eliminar_genero(id):
         return {"message": "Género eliminado correctamente"}
     

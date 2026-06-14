@@ -1,5 +1,3 @@
-import email
-
 from sqlalchemy.orm import Session
 from domain.models import Usuario
 
