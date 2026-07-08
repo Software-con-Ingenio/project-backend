@@ -36,7 +36,8 @@ def login(data: dict, db: Session = Depends(get_db)):
         return {
             "access_token": token, 
             "token_type": "bearer",
-            "id_rol": user.id_rol # <--- AQUÍ ESTÁ LA MAGIA
+            "id_rol": user.id_rol, # <--- AQUÍ ESTÁ LA MAGIA
+            "nombre_usuario": user.nombre
         }
     except ValueError:
         raise HTTPException(status_code=401, detail="Credenciales incorrectas")

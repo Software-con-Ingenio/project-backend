@@ -9,17 +9,27 @@ class UsuarioService:
         self.repo = UsuarioRepository(db)
 
     def registrar_usuario(self, data: dict):
-        if self.repo.existe_email(data['email']):
+        required_fields = ('nombre', 'email', 'contrasena', 'id_rol')
+        for field in required_fields:
+            if field not in data or data[field] in (None, ''):
+                raise ValueError(f"Falta el campo obligatorio: {field}")
+
+        nombre = data['nombre'].strip()
+        email = data['email'].strip().lower()
+        contrasena = data['contrasena']
+        id_rol = data['id_rol']
+
+        if self.repo.existe_email(email):
             raise ValueError("El correo electrónico ya está registrado.")
         
         # Argon2id no tiene el límite de 72 bytes, así que simplemente hasheamos
-        hashed_password = pwd_context.hash(data['contrasena'])
+        hashed_password = pwd_context.hash(contrasena)
         
         return self.repo.crear(
-            nombre=data['nombre'],
-            email=data['email'],
+            nombre=nombre,
+            email=email,
             password_hash=hashed_password,
-            id_rol=data['id_rol']
+            id_rol=id_rol
         )
         
     def listar_usuarios(self):
