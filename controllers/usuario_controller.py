@@ -28,7 +28,7 @@ def editar_usuario(id_usuario: int, data: dict, db: Session = Depends(get_db), c
         raise HTTPException(status_code=403, detail="No autorizado")
     try:
         service = UsuarioService(db)
-        usuario = service.actualizar_usuario(id_usuario, data)
+        service.actualizar_usuario(id_usuario, data)
         return {"message": "Usuario actualizado correctamente"}
     except ValueError as e:
         # Esto atrapará tu error de "Campo no permitido" y enviará un 400
@@ -44,3 +44,4 @@ def eliminar_usuario(id_usuario: int, db: Session = Depends(get_db), current_use
         return {"message": "Usuario eliminado físicamente"}
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e))
+    

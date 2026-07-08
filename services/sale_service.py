@@ -152,7 +152,7 @@ class SaleService:
         c.drawString(50, y - 20, f"TOTAL: ${total:.2f}")
         c.save()
 
-    def obtener_resumen_diario(self, fecha_busqueda: date):
+    def obtener_resumen_diario_pdf(self, fecha_busqueda: date):
         ventas = self.sale_repo.obtener_ventas_por_fecha(fecha_busqueda)
         ventas_data = [{"id_venta": v.id_venta, "total": float(v.total or 0), "fecha": str(v.fecha)} for v in ventas]
         return {"fecha": str(fecha_busqueda), "total_recaudado": sum(v['total'] for v in ventas_data), "ventas": ventas_data}

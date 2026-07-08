@@ -17,7 +17,6 @@ class PlatformRepository:
     def eliminar(self, id_plataforma: int):
         plataforma = self.db.query(Platform).filter(Platform.id_plataforma == id_plataforma).first()
         if plataforma:
-            # Desasociamos videojuegos para evitar que la eliminación falle por clave foránea.
             self.db.query(Videojuego).filter(Videojuego.id_plataforma == id_plataforma).update(
                 {Videojuego.id_plataforma: None},
                 synchronize_session=False,

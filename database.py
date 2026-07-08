@@ -6,8 +6,6 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# Usamos 'postgres_db' porque es el nombre del servicio en tu docker-compose
-# Y usamos el puerto 5432 (el interno del contenedor)
 DATABASE_URL = f"postgresql://{os.getenv('DB_USER')}:{os.getenv('DB_PASSWORD')}@postgres_db:5432/{os.getenv('DB_NAME')}"
 
 engine = create_engine(DATABASE_URL)

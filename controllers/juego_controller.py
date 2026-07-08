@@ -1,4 +1,3 @@
-
 from fastapi import APIRouter, Depends, Query, HTTPException
 from typing import Optional
 from sqlalchemy.orm import Session
@@ -12,12 +11,10 @@ router = APIRouter()
 
 @router.get("/juegos")
 def listar_juegos(
-    # Agregamos busqueda como un parámetro opcional en la URL
     busqueda: Optional[str] = Query(None, description="Palabra clave para filtrar por nombre"),
     db: Session = Depends(get_db)
 ):
     service = JuegoService(db)
-    # Pasamos el parámetro al servicio
     return service.listar_juegos(busqueda)
 
 @router.post("/juegos")
